@@ -19,20 +19,20 @@ package justpinegames.logi
         private var _index:int;
         private var _owner:List;
 
-        public function ConsoleItemRenderer(labelColor:int, labelColorHighlight:int)
+        public function ConsoleItemRenderer(textSize:int, labelColor:int, labelColorHighlight:int)
         {
             _index = -1;
-            _format = _format ? _format : new BitmapFontTextFormat(new BitmapFont(), 16, labelColor);
-            _formatHighlight = _formatHighlight ? _formatHighlight : new BitmapFontTextFormat(new BitmapFont(), 16, labelColorHighlight);
+            _format = _format ? _format : new BitmapFontTextFormat(new BitmapFont(), textSize, labelColor);
+            _formatHighlight = _formatHighlight ? _formatHighlight : new BitmapFontTextFormat(new BitmapFont(), textSize, labelColorHighlight);
 
             this.labelFactory = function():ITextRenderer
             {
                 return new BitmapFontTextRenderer();
             };
             this.defaultLabelProperties.smoothing = TextureSmoothing.NONE;
-            this.defaultLabelProperties.textFormat = new BitmapFontTextFormat(new BitmapFont(), 16, labelColor);
+            this.defaultLabelProperties.textFormat = new BitmapFontTextFormat(new BitmapFont(), textSize, labelColor);
             this.downLabelProperties.smoothing = TextureSmoothing.NONE;
-            this.downLabelProperties.textFormat = new BitmapFontTextFormat(new BitmapFont(), 16, labelColor);
+            this.downLabelProperties.textFormat = new BitmapFontTextFormat(new BitmapFont(), textSize, labelColor);
 
             this.horizontalAlign = HORIZONTAL_ALIGN_LEFT;
         }

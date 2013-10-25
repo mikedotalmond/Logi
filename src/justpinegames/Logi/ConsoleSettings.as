@@ -17,5 +17,10 @@ package justpinegames.logi
 		public var hudEnabled:Boolean = true;
 		public var hudMessageFadeOutTime:Number = 0.2;
 		public var hudMessageDisplayTime:Number = 2;
+		
+		public var buttonTextSize:int=16;
+		public var logTextSize:int=16;
+		public var letterSpacing:int=2;
+		public var lineHeight:int = 20;
 	}
 }

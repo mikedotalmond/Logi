@@ -42,7 +42,6 @@ package justpinegames.logi
         private var _hudContainer:ScrollContainer;
         private var _consoleHeight:Number;
         private var _isShown:Boolean;
-        private var _hideButton:Button;
         private var _clearButton:Button;
         private var _data:Vector.<Object>;
         private var _quad:Quad;
@@ -69,10 +68,10 @@ package justpinegames.logi
             _data = new Vector.<Object>();
             
             _defaultFont = new BitmapFont();
-            _format = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.textColor);
-            _format.letterSpacing = 2;
-            _formatBackground = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.textBackgroundColor);
-            _formatBackground.letterSpacing = 2;
+            _format = new BitmapFontTextFormat(_defaultFont, _consoleSettings.logTextSize, _consoleSettings.textColor);
+            _format.letterSpacing = _consoleSettings.letterSpacing;
+            _formatBackground = new BitmapFontTextFormat(_defaultFont, _consoleSettings.logTextSize, _consoleSettings.textBackgroundColor);
+            _formatBackground.letterSpacing = _consoleSettings.letterSpacing;
             
             this.addEventListener(Event.ADDED_TO_STAGE, onAddedToStageHandler);
         }
@@ -112,9 +111,9 @@ package justpinegames.logi
             _list.dataProvider = new ListCollection(_data);
             _list.itemRendererFactory = function():IListItemRenderer
             {
-                var consoleItemRenderer:ConsoleItemRenderer = new ConsoleItemRenderer(_consoleSettings.textColor, _consoleSettings.highlightColor);
+                var consoleItemRenderer:ConsoleItemRenderer = new ConsoleItemRenderer(_consoleSettings.logTextSize, _consoleSettings.textColor, _consoleSettings.highlightColor);
                 consoleItemRenderer.width = _list.width;
-                consoleItemRenderer.height = 20;
+                consoleItemRenderer.height = _consoleSettings.lineHeight;
                 return consoleItemRenderer;
             };
             _list.scrollBarDisplayMode = Scroller.SCROLL_BAR_DISPLAY_MODE_NONE;
@@ -123,30 +122,6 @@ package justpinegames.logi
 
             _list.backgroundSkin = null;
             
-            _hideButton = new Button();
-            _hideButton.label = "Hide";
-            _hideButton.addEventListener(Event.ADDED, function(e:Event):void
-            {
-                _hideButton.labelFactory = function():ITextRenderer
-                {
-                    return new BitmapFontTextRenderer();
-                };
-                _hideButton.defaultLabelProperties.smoothing = TextureSmoothing.NONE;
-                _hideButton.defaultLabelProperties.textFormat = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.textColor);
-                _hideButton.downLabelProperties.smoothing = TextureSmoothing.NONE;
-                _hideButton.downLabelProperties.textFormat = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.highlightColor);
-
-                _hideButton.stateToSkinFunction = function(target:Object, state:Object, oldValue:Object = null):Object
-                {
-                    return null;
-                };
-
-                _hideButton.width = 150;
-                _hideButton.height = 40;
-            });
-            _hideButton.addEventListener(Event.TRIGGERED, hide);
-            _consoleContainer.addChild(_hideButton);
-			
 			_clearButton = new Button();
 			_clearButton.label = "Clear";
             _clearButton.addEventListener(Event.ADDED, function(e:Event):void
@@ -156,14 +131,14 @@ package justpinegames.logi
                     return new BitmapFontTextRenderer();
                 };
                 _clearButton.defaultLabelProperties.smoothing = TextureSmoothing.NONE;
-                _clearButton.defaultLabelProperties.textFormat = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.textColor);
+                _clearButton.defaultLabelProperties.textFormat = new BitmapFontTextFormat(_defaultFont, _consoleSettings.buttonTextSize, _consoleSettings.textColor);
                 _clearButton.downLabelProperties.smoothing = TextureSmoothing.NONE;
-                _clearButton.downLabelProperties.textFormat = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.highlightColor);
+                _clearButton.downLabelProperties.textFormat = new BitmapFontTextFormat(_defaultFont, _consoleSettings.buttonTextSize, _consoleSettings.highlightColor);
 				_clearButton.stateToSkinFunction = function(target:Object, state:Object, oldValue:Object = null):Object
                 {
                     return null;
                 };
-                _clearButton.width  = 150;
+                _clearButton.width  = 80;
                 _clearButton.height = 40;
             });
             _clearButton.addEventListener(Event.TRIGGERED, clear);
@@ -211,10 +186,7 @@ package justpinegames.logi
             _quad.width = width;
             _quad.height = _consoleHeight;
             
-            _hideButton.x = width - 110 - HORIZONTAL_PADDING;
-            _hideButton.y = _consoleHeight - 33 - VERTICAL_PADDING;
-            
-			_clearButton.x = _hideButton.x - 110 - HORIZONTAL_PADDING;
+            _clearButton.x = width - 70 - HORIZONTAL_PADDING;
             _clearButton.y = _consoleHeight - 33 - VERTICAL_PADDING;
             
             _list.width = this.stage.stageWidth - HORIZONTAL_PADDING * 2;
@@ -311,8 +283,8 @@ package justpinegames.logi
 
             var hudLabelContainer:FeathersControl = new FeathersControl();
             hudLabelContainer.width = 640;
-            hudLabelContainer.height = 20;
-
+            hudLabelContainer.height = _consoleSettings.lineHeight;
+			
             var addBackground:Function = function(offsetX:int, offsetY: int):void
             {
                 var hudLabelBackground:BitmapFontTextRenderer = createLabel(message, _formatBackground);
