@@ -1,6 +1,6 @@
 package  
 {
-    import justpinegames.Logi.Console;
+    import justpinegames.logi.Console;
 
     /**
 	 * Helper package-level function. Usage is the same as for the trace statemen.

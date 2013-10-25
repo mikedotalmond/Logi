@@ -1,4 +1,4 @@
-package justpinegames.Logi
+package justpinegames.logi
 {
     import feathers.controls.Button;
     import feathers.controls.List;
@@ -29,7 +29,7 @@ package justpinegames.Logi
     /**
      * Main class, used to display console and handle its events.
      */
-    public class Console extends Sprite
+    final public class Console extends Sprite
     {
         private static var _console:Console;
         private static var _archiveOfUndisplayedLogs:Vector.<String> = new <String>[];
@@ -42,7 +42,8 @@ package justpinegames.Logi
         private var _hudContainer:ScrollContainer;
         private var _consoleHeight:Number;
         private var _isShown:Boolean;
-        private var _copyButton:Button;
+        private var _hideButton:Button;
+        private var _clearButton:Button;
         private var _data:Vector.<Object>;
         private var _quad:Quad;
         private var _list:List;
@@ -64,8 +65,7 @@ package justpinegames.Logi
             _console = _console ? _console : this;
 
             _juggler = new Juggler();
-            Starling
-
+			Starling
             _data = new Vector.<Object>();
             
             _defaultFont = new BitmapFont();
@@ -123,30 +123,51 @@ package justpinegames.Logi
 
             _list.backgroundSkin = null;
             
-            _copyButton = new Button();
-
-            _copyButton.label = "Copy All";
-            _copyButton.addEventListener(Event.ADDED, function(e:Event):void
+            _hideButton = new Button();
+            _hideButton.label = "Hide";
+            _hideButton.addEventListener(Event.ADDED, function(e:Event):void
             {
-                _copyButton.labelFactory = function():ITextRenderer
+                _hideButton.labelFactory = function():ITextRenderer
                 {
                     return new BitmapFontTextRenderer();
                 };
-                _copyButton.defaultLabelProperties.smoothing = TextureSmoothing.NONE;
-                _copyButton.defaultLabelProperties.textFormat = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.textColor);
-                _copyButton.downLabelProperties.smoothing = TextureSmoothing.NONE;
-                _copyButton.downLabelProperties.textFormat = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.highlightColor);
+                _hideButton.defaultLabelProperties.smoothing = TextureSmoothing.NONE;
+                _hideButton.defaultLabelProperties.textFormat = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.textColor);
+                _hideButton.downLabelProperties.smoothing = TextureSmoothing.NONE;
+                _hideButton.downLabelProperties.textFormat = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.highlightColor);
 
-                _copyButton.stateToSkinFunction = function(target:Object, state:Object, oldValue:Object = null):Object
+                _hideButton.stateToSkinFunction = function(target:Object, state:Object, oldValue:Object = null):Object
                 {
                     return null;
                 };
 
-                _copyButton.width = 150;
-                _copyButton.height = 40;
+                _hideButton.width = 150;
+                _hideButton.height = 40;
             });
-            _copyButton.addEventListener(Event.TRIGGERED, copy);
-            _consoleContainer.addChild(_copyButton);
+            _hideButton.addEventListener(Event.TRIGGERED, hide);
+            _consoleContainer.addChild(_hideButton);
+			
+			_clearButton = new Button();
+			_clearButton.label = "Clear";
+            _clearButton.addEventListener(Event.ADDED, function(e:Event):void
+            {
+                _clearButton.labelFactory = function():ITextRenderer
+                {
+                    return new BitmapFontTextRenderer();
+                };
+                _clearButton.defaultLabelProperties.smoothing = TextureSmoothing.NONE;
+                _clearButton.defaultLabelProperties.textFormat = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.textColor);
+                _clearButton.downLabelProperties.smoothing = TextureSmoothing.NONE;
+                _clearButton.downLabelProperties.textFormat = new BitmapFontTextFormat(_defaultFont, 16, _consoleSettings.highlightColor);
+				_clearButton.stateToSkinFunction = function(target:Object, state:Object, oldValue:Object = null):Object
+                {
+                    return null;
+                };
+                _clearButton.width  = 150;
+                _clearButton.height = 40;
+            });
+            _clearButton.addEventListener(Event.TRIGGERED, clear);
+            _consoleContainer.addChild(_clearButton);
             
             _hudContainer = new ScrollContainer();
             // TODO This should be changed to prevent the hud from even creating, not just making it invisible.
@@ -173,6 +194,7 @@ package justpinegames.Logi
 
             this.addEventListener(Event.ENTER_FRAME, onEnterFrame);
         }
+		
 
         private function onEnterFrame(event:EnterFrameEvent):void
         {
@@ -189,8 +211,11 @@ package justpinegames.Logi
             _quad.width = width;
             _quad.height = _consoleHeight;
             
-            _copyButton.x = width - 110 - HORIZONTAL_PADDING;
-            _copyButton.y = _consoleHeight - 33 - VERTICAL_PADDING;
+            _hideButton.x = width - 110 - HORIZONTAL_PADDING;
+            _hideButton.y = _consoleHeight - 33 - VERTICAL_PADDING;
+            
+			_clearButton.x = _hideButton.x - 110 - HORIZONTAL_PADDING;
+            _clearButton.y = _consoleHeight - 33 - VERTICAL_PADDING;
             
             _list.width = this.stage.stageWidth - HORIZONTAL_PADDING * 2;
             _list.height = _consoleHeight - VERTICAL_PADDING * 2;
@@ -231,12 +256,16 @@ package justpinegames.Logi
             return text;
         }
         
-        private function copy():void
-        {
-            var text:String = this.getLogData();
-            Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, text);
-        }
         
+		/**
+		 * clear the console
+		 */
+		public function clear():void {
+			_list.dataProvider.removeAll();
+			_data.length = 0;
+			logMessage("Cleared");
+		}
+		
         /**
          * Displays the message string in the console, or on the HUD if the console is hidden.
          * 
@@ -260,7 +289,9 @@ package justpinegames.Logi
                 // after the first iteration set prefix to empty string:
                 prefix = "";
             }
-            _list.scrollToDisplayIndex(_list.dataProvider.length - 1);
+			if (_list.dataProvider.length > 0) {
+				_list.scrollToDisplayIndex(_list.dataProvider.length - 1);
+			}
         }
 
         private function showInHud(message:String):void
@@ -309,7 +340,7 @@ package justpinegames.Logi
         }
         
         /**
-         * Returns the fist created Console instance.
+         * Returns the first created Console instance.
          * 
          * @return Console instance
          */

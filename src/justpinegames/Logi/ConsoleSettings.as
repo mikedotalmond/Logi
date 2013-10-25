@@ -1,10 +1,11 @@
-package justpinegames.Logi 
+package justpinegames.logi 
 {
 	/**
 	 * Used for styling console appearance and behaviour.
 	 */
-	public class ConsoleSettings 
+	final public class ConsoleSettings
 	{
+		public function ConsoleSettings() { }
 		public var animationTime:Number = 0.2;
 		public var consoleSize:Number = 0.33;
 		public var textColor:int = 0xdddddd;
