@@ -235,7 +235,7 @@ package justpinegames.logi
 		public function clear():void {
 			_list.dataProvider.removeAll();
 			_data.length = 0;
-			logMessage("Cleared");
+			logMessage("/// log cleared ///");
 		}
 		
         /**
@@ -282,7 +282,7 @@ package justpinegames.logi
             };
 
             var hudLabelContainer:FeathersControl = new FeathersControl();
-            hudLabelContainer.width = 640;
+            hudLabelContainer.width = _consoleContainer.width;
             hudLabelContainer.height = _consoleSettings.lineHeight;
 			
             var addBackground:Function = function(offsetX:int, offsetY: int):void
