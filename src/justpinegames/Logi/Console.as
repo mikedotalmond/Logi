@@ -144,17 +144,17 @@ package justpinegames.logi
             _clearButton.addEventListener(Event.TRIGGERED, clear);
             _consoleContainer.addChild(_clearButton);
             
-            _hudContainer = new ScrollContainer();
             // TODO This should be changed to prevent the hud from even creating, not just making it invisible.
-            if (!_consoleSettings.hudEnabled) _hudContainer.visible = false;
-
-            _hudContainer.x = HORIZONTAL_PADDING;
-            _hudContainer.y = VERTICAL_PADDING;
-            _hudContainer.touchable = false;
-            _hudContainer.layout = new VerticalLayout();
-            _hudContainer.scrollerProperties.verticalScrollPolicy = Scroller.SCROLL_POLICY_OFF;
-            this.addChild(_hudContainer);
-            
+            if (_consoleSettings.hudEnabled) {
+				_hudContainer = new ScrollContainer();
+				_hudContainer.x = HORIZONTAL_PADDING;
+				_hudContainer.y = VERTICAL_PADDING;
+				_hudContainer.touchable = false;
+				_hudContainer.layout = new VerticalLayout();
+				_hudContainer.scrollerProperties.verticalScrollPolicy = Scroller.SCROLL_POLICY_OFF;
+				this.addChild(_hudContainer);
+            }
+			
             this.setScreenSize(Starling.current.nativeStage.stageWidth, Starling.current.nativeStage.stageHeight);
             
             for each (var undisplayed:* in _archiveOfUndisplayedLogs)
@@ -200,7 +200,7 @@ package justpinegames.logi
             _consoleContainer.visible = true;
 
             _juggler.tween(_consoleContainer, _consoleSettings.animationTime, { y: 0, alpha: 1 });
-            _juggler.tween(_hudContainer, _consoleSettings.animationTime, { alpha: 0 });
+            if(_hudContainer!=null) _juggler.tween(_hudContainer, _consoleSettings.animationTime, { alpha: 0 });
 
             _isShown = true;
         }
@@ -210,7 +210,8 @@ package justpinegames.logi
             _juggler.tween(_consoleContainer, _consoleSettings.animationTime, { y: -_consoleHeight, alpha: 0, onComplete:function():void {
                 _consoleContainer.visible = false;
             }});
-            _juggler.tween(_hudContainer, _consoleSettings.animationTime, { alpha: 1 });
+			
+			if(_hudContainer!=null) _juggler.tween(_hudContainer, _consoleSettings.animationTime, { alpha: 1 });
 
             _isShown = false;
         }
@@ -253,7 +254,7 @@ package justpinegames.logi
 
             for each (var messagePart:String in messageParts)
             {
-                showInHud(messagePart);
+                if(_consoleSettings.hudEnabled) showInHud(messagePart);
 
                 var labelDisplay:String = prefix + messagePart;
                 _list.dataProvider.push({label: labelDisplay, data: messagePart});
